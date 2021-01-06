@@ -3,16 +3,22 @@ import { PayPalButton } from 'react-paypal-button-v2';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { detailsOrder, payOrder, deliverOrder } from '../actions/orderActions';
+import { deliverOrder, detailsOrder, payOrder } from '../actions/orderActions';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
-import { ORDER_PAY_RESET, ORDER_DELIVER_RESET } from '../constants/orderConstants';
+import {
+  ORDER_DELIVER_RESET,
+  ORDER_PAY_RESET,
+} from '../constants/orderConstants';
 
 export default function OrderScreen(props) {
   const orderId = props.match.params.id;
   const [sdkReady, setSdkReady] = useState(false);
   const orderDetails = useSelector((state) => state.orderDetails);
+  const productDetails = useSelector((state) => state.productDetails);
   const { order, loading, error } = orderDetails;
+  const { product } = productDetails
+
   const userSignin = useSelector((state) => state.userSignin);
   const { userInfo } = userSignin;
 
@@ -23,13 +29,13 @@ export default function OrderScreen(props) {
     success: successPay,
   } = orderPay;
 
+
   const orderDeliver = useSelector((state) => state.orderDeliver);
   const {
     loading: loadingDeliver,
     error: errorDeliver,
     success: successDeliver,
   } = orderDeliver;
-
   const dispatch = useDispatch();
   useEffect(() => {
     const addPayPalScript = async () => {
@@ -43,7 +49,12 @@ export default function OrderScreen(props) {
       };
       document.body.appendChild(script);
     };
-    if (!order || successPay || successDeliver || (order && order._id !== orderId)) {
+    if (
+      !order ||
+      successPay ||
+      successDeliver ||
+      (order && order._id !== orderId)
+    ) {
       dispatch({ type: ORDER_PAY_RESET });
       dispatch({ type: ORDER_DELIVER_RESET });
       dispatch(detailsOrder(orderId));
@@ -56,14 +67,19 @@ export default function OrderScreen(props) {
         }
       }
     }
-  }, [dispatch, orderId, sdkReady, successPay, successDeliver, order]);
+  }, [dispatch, order, orderId, sdkReady, successPay, successDeliver]);
 
   const successPaymentHandler = (paymentResult) => {
     dispatch(payOrder(order, paymentResult));
   };
+
   const deliverHandler = () => {
     dispatch(deliverOrder(order._id));
   };
+
+
+
+
   return loading ? (
     <LoadingBox></LoadingBox>
   ) : error ? (
@@ -76,32 +92,32 @@ export default function OrderScreen(props) {
               <ul>
                 <li>
                   <div className="card card-body">
-                    <h2>Đang chuyển hàng</h2>
+                    <h2>Giao Hàng</h2>
                     <p>
-                      <strong>Tên:</strong> {order.shippingAddress.fullName} <br />
-                      <strong>Địa chỉ: </strong> {order.shippingAddress.address},
+                      <strong>Tên :</strong> {order.shippingAddress.fullName} <br />
+                      <strong>Địa Chỉ: </strong> {order.shippingAddress.address},
                   {order.shippingAddress.city},{' '}
                       {order.shippingAddress.postalCode},
                   {order.shippingAddress.country}
                     </p>
                     {order.isDelivered ? (
                       <MessageBox variant="success">
-                        Được giao lúc {order.deliveredAt}
+                        Giao Hàng {order.deliveredAt}
                       </MessageBox>
                     ) : (
-                        <MessageBox variant="danger">Không được giao</MessageBox>
+                        <MessageBox variant="danger">Chưa Giao Hàng</MessageBox>
                       )}
                   </div>
                 </li>
                 <li>
                   <div className="card card-body">
-                    <h2>Thanh toán</h2>
+                    <h2>Hình Thức Thanh Toán</h2>
                     <p>
                       <strong>Phương thức:</strong> {order.paymentMethod}
                     </p>
                     {order.isPaid ? (
                       <MessageBox variant="success">
-                        Thanh toán tại: {order.paidAt}
+                        Thanh toán tại {order.paidAt}
                       </MessageBox>
                     ) : (
                         <MessageBox variant="danger">Không thanh toán</MessageBox>
@@ -110,7 +126,7 @@ export default function OrderScreen(props) {
                 </li>
                 <li>
                   <div className="card card-body">
-                    <h2>Đặt các mặt hàng</h2>
+                    <h2>Đặt các sản phẩm</h2>
                     <ul>
                       {order.orderItems.map((item) => (
                         <li key={item.product}>
@@ -135,6 +151,17 @@ export default function OrderScreen(props) {
                         </li>
                       ))}
                     </ul>
+                    <div className="key">
+                      <h3>Mã code:</h3>
+                      <h4>
+                        {order.orderItems.map((item) => (
+                          <span key={item.product}>
+
+                            {order.isPaid ? `${item.keynumber}` : "Chưa thanh toán"}
+                          </span>
+                        ))}
+                      </h4>
+                    </div>
                   </div>
                 </li>
               </ul>
@@ -147,13 +174,13 @@ export default function OrderScreen(props) {
                   </li>
                   <li>
                     <div className="row">
-                      <div>Mặt hàng</div>
+                      <div>Sản Phẩm</div>
                       <div>${order.itemsPrice.toFixed(2)}</div>
                     </div>
                   </li>
                   <li>
                     <div className="row">
-                      <div>Đang chuyển hàng</div>
+                      <div>Giao Hàng</div>
                       <div>${order.shippingPrice.toFixed(2)}</div>
                     </div>
                   </li>

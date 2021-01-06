@@ -53,6 +53,7 @@ productRouter.post(
       rating: 0,
       numReviews: 0,
       description: 'Game bắn súng Fps độc đáo',
+      keynumber: ' '
     });
     const createdProduct = await product.save();
     res.send({ message: 'Thêm thành công', product: createdProduct });
@@ -72,6 +73,7 @@ productRouter.put(
       product.brand = req.body.brand;
       product.countInStock = req.body.countInStock;
       product.description = req.body.description;
+      product.keynumber = req.body.keynumber
       const updatedProduct = await product.save();
       res.send({ message: 'Product Updated', product: updatedProduct });
     } else {

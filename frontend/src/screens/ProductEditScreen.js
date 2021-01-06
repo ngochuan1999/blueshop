@@ -15,6 +15,7 @@ export default function ProductEditScreen(props) {
   const [countInStock, setCountInStock] = useState('');
   const [brand, setBrand] = useState('');
   const [description, setDescription] = useState('');
+  const [keynumber, setKeynumber] = useState('');
 
   const productDetails = useSelector((state) => state.productDetails);
   const { loading, error, product } = productDetails;
@@ -40,6 +41,7 @@ export default function ProductEditScreen(props) {
       setCountInStock(product.countInStock);
       setBrand(product.brand);
       setDescription(product.description);
+      setKeynumber(product.keynumber)
     }
   }, [product, dispatch, productId, successUpdate, props.history]);
   const submitHandler = (e) => {
@@ -55,6 +57,7 @@ export default function ProductEditScreen(props) {
         brand,
         countInStock,
         description,
+        keynumber
       })
     );
   };
@@ -154,7 +157,7 @@ export default function ProductEditScreen(props) {
                   <input
                     id="brand"
                     type="text"
-                    placeholder="Enter brand"
+                    placeholder="Nhập nhà phát hành"
                     value={brand}
                     onChange={(e) => setBrand(e.target.value)}
                   ></input>
@@ -167,6 +170,16 @@ export default function ProductEditScreen(props) {
                     placeholder="Nhập số lượng"
                     value={countInStock}
                     onChange={(e) => setCountInStock(e.target.value)}
+                  ></input>
+                </div>
+                <div>
+                  <label htmlFor="key">Mã Game</label>
+                  <input
+                    id="key"
+                    type="text"
+                    placeholder="Nhập mã game"
+                    value={keynumber}
+                    onChange={(e) => setKeynumber(e.target.value)}
                   ></input>
                 </div>
                 <div>

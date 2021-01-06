@@ -13,7 +13,7 @@ export default function OrderHistoryScreen(props) {
   }, [dispatch]);
   return (
     <div>
-      <h1>Order History</h1>
+      <h1>Lịch sử đặt hàng</h1>
       {loading ? (
         <LoadingBox></LoadingBox>
       ) : error ? (
@@ -26,7 +26,7 @@ export default function OrderHistoryScreen(props) {
                   <th>Ngày</th>
                   <th>Tổng</th>
                   <th>Đã thanh toán</th>
-                  <th>ĐÃ giao hàng</th>
+                  <th>Đã giao hàng</th>
                   <th>Hành động</th>
                 </tr>
               </thead>
@@ -36,7 +36,7 @@ export default function OrderHistoryScreen(props) {
                     <td>{order._id}</td>
                     <td>{order.createdAt.substring(0, 10)}</td>
                     <td>{order.totalPrice.toFixed(2)}</td>
-                    <td>{order.isPaid ? order.paidAt.substring(0, 10) : 'No'}</td>
+                    <td>{order.isPaid ? 'Yes' : 'No'}</td>
                     <td>
                       {order.isDelivered
                         ? order.deliveredAt.substring(0, 10)
